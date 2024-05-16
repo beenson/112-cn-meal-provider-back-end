@@ -3,11 +3,7 @@ stages:
 
 check_version:
   stage: test
-  image: alpine:latest
-  services:
-    - docker:19.03.12-dind # Docker-in-Docker 服務
+  image: docker:19.03.12-dind
   script:
-    - echo "Checking Alpine version..."
-    - cat /etc/os-release
-    - uname -a
+    - echo "Checking version..."
     - docker --version
