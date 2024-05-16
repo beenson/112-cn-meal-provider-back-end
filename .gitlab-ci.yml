@@ -1,0 +1,10 @@
+stages:
+  - test
+
+check_version:
+  stage: test
+  image: alpine:latest
+  script:
+    - echo "Checking Alpine version..."
+    - cat /etc/os-release
+    - uname -a
