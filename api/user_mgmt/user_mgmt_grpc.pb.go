@@ -8,6 +8,7 @@ package user_mgmt
 
 import (
 	context "context"
+	common "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -23,7 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserManagementServiceClient interface {
 	PreAuth(ctx context.Context, in *UserID, opts ...grpc.CallOption) (*Challenge, error)
-	Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*common.AuthToken, error)
+	RegisterUser(ctx context.Context, in *RegisterUserRequest, opts ...grpc.CallOption) (*common.Status, error)
+	UnregisterUser(ctx context.Context, in *UnregisterUserRequest, opts ...grpc.CallOption) (*common.Status, error)
 }
 
 type userManagementServiceClient struct {
@@ -43,9 +46,27 @@ func (c *userManagementServiceClient) PreAuth(ctx context.Context, in *UserID, o
 	return out, nil
 }
 
-func (c *userManagementServiceClient) Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
-	out := new(AuthResponse)
+func (c *userManagementServiceClient) Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*common.AuthToken, error) {
+	out := new(common.AuthToken)
 	err := c.cc.Invoke(ctx, "/meal_provider.UserManagementService/Auth", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userManagementServiceClient) RegisterUser(ctx context.Context, in *RegisterUserRequest, opts ...grpc.CallOption) (*common.Status, error) {
+	out := new(common.Status)
+	err := c.cc.Invoke(ctx, "/meal_provider.UserManagementService/RegisterUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userManagementServiceClient) UnregisterUser(ctx context.Context, in *UnregisterUserRequest, opts ...grpc.CallOption) (*common.Status, error) {
+	out := new(common.Status)
+	err := c.cc.Invoke(ctx, "/meal_provider.UserManagementService/UnregisterUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +78,9 @@ func (c *userManagementServiceClient) Auth(ctx context.Context, in *AuthRequest,
 // for forward compatibility
 type UserManagementServiceServer interface {
 	PreAuth(context.Context, *UserID) (*Challenge, error)
-	Auth(context.Context, *AuthRequest) (*AuthResponse, error)
+	Auth(context.Context, *AuthRequest) (*common.AuthToken, error)
+	RegisterUser(context.Context, *RegisterUserRequest) (*common.Status, error)
+	UnregisterUser(context.Context, *UnregisterUserRequest) (*common.Status, error)
 	mustEmbedUnimplementedUserManagementServiceServer()
 }
 
@@ -68,8 +91,14 @@ type UnimplementedUserManagementServiceServer struct {
 func (UnimplementedUserManagementServiceServer) PreAuth(context.Context, *UserID) (*Challenge, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PreAuth not implemented")
 }
-func (UnimplementedUserManagementServiceServer) Auth(context.Context, *AuthRequest) (*AuthResponse, error) {
+func (UnimplementedUserManagementServiceServer) Auth(context.Context, *AuthRequest) (*common.AuthToken, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
+}
+func (UnimplementedUserManagementServiceServer) RegisterUser(context.Context, *RegisterUserRequest) (*common.Status, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterUser not implemented")
+}
+func (UnimplementedUserManagementServiceServer) UnregisterUser(context.Context, *UnregisterUserRequest) (*common.Status, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnregisterUser not implemented")
 }
 func (UnimplementedUserManagementServiceServer) mustEmbedUnimplementedUserManagementServiceServer() {}
 
@@ -120,6 +149,42 @@ func _UserManagementService_Auth_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserManagementService_RegisterUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserManagementServiceServer).RegisterUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/meal_provider.UserManagementService/RegisterUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserManagementServiceServer).RegisterUser(ctx, req.(*RegisterUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserManagementService_UnregisterUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnregisterUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserManagementServiceServer).UnregisterUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/meal_provider.UserManagementService/UnregisterUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserManagementServiceServer).UnregisterUser(ctx, req.(*UnregisterUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserManagementService_ServiceDesc is the grpc.ServiceDesc for UserManagementService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +199,14 @@ var UserManagementService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Auth",
 			Handler:    _UserManagementService_Auth_Handler,
+		},
+		{
+			MethodName: "RegisterUser",
+			Handler:    _UserManagementService_RegisterUser_Handler,
+		},
+		{
+			MethodName: "UnregisterUser",
+			Handler:    _UserManagementService_UnregisterUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

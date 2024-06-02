@@ -7,6 +7,21 @@ message UserID {
     required string id = 1;
 }
 
+message RegisterUserRequest {
+    required AuthToken admintoken = 1;
+    required NewUserInfo info = 2;
+}
+
+message UnregisterUserRequest {
+    required AuthToken admintoken = 1;
+    required UserID target = 2;
+}
+
+message NewUserInfo {
+    required UserInfo info = 1;
+    required string publicKey = 2;
+}
+
 message Challenge {
     required bytes value = 1;
 }
@@ -20,16 +35,9 @@ message AuthRequest {
     required Response response = 2;
 }
 
-message AuthToken {
-    required bytes value = 1;
-}
-
-message AuthResponse {
-    required AuthToken token = 1;
-    required Status code = 2;
-}
-
 service UserManagementService {
     rpc PreAuth(UserID) returns (Challenge);
-    rpc Auth(AuthRequest) returns (AuthResponse);
+    rpc Auth(AuthRequest) returns (AuthToken);
+    rpc RegisterUser(RegisterUserRequest) returns (Status);
+    rpc UnregisterUser(UnregisterUserRequest) returns (Status);
 }
