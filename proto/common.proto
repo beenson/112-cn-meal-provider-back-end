@@ -1,0 +1,14 @@
+syntax = "proto2";
+package meal_provider;
+option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/common;common";
+
+
+message User {
+    required string id = 1;
+    required string group = 2;
+    required bytes public_key = 3;
+}
+
+message Status {
+    required int32 code = 1;
+}

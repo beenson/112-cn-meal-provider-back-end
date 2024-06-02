@@ -1,0 +1,35 @@
+syntax = "proto2";
+package meal_provider;
+import "common.proto";
+option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/user_mgmt;user_mgmt";
+
+message UserID {
+    required string id = 1;
+}
+
+message Challenge {
+    required bytes value = 1;
+}
+
+message Response {
+    required bytes value = 1;
+}
+
+message AuthRequest {
+    required UserID id = 1;
+    required Response response = 2;
+}
+
+message AuthToken {
+    required bytes value = 1;
+}
+
+message AuthResponse {
+    required AuthToken token = 1;
+    required Status code = 2;
+}
+
+service UserManagementService {
+    rpc PreAuth(UserID) returns (Challenge);
+    rpc Auth(AuthRequest) returns (AuthResponse);
+}
