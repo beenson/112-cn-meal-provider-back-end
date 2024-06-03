@@ -12,17 +12,17 @@ import (
 type GRPCManager struct {
 	protocol.UnimplementedUserManagementServiceServer
 	grpcServer *grpc.Server
-	listener	net.Listener
+	listener   net.Listener
 	db         *gorm.DB
 }
 
 func NewManager(address string, opts []grpc.ServerOption, db *gorm.DB) *GRPCManager {
-
-	if lis, err := net.Listen("tcp", address); err != nil {
+	lis, err := net.Listen("tcp", address)
+	if err != nil {
 		fmt.Printf("net.Listen() failed: %v", err)
 		panic(err)
 	}
-	svc := &GRPCManger{
+	svc := &GRPCManager{
 		listener:   lis,
 		grpcServer: grpc.NewServer(opts...),
 		db:         db,
@@ -32,8 +32,8 @@ func NewManager(address string, opts []grpc.ServerOption, db *gorm.DB) *GRPCMana
 	return svc
 }
 
-func (s *GRPCManger) Serve() {
-	if err := s.grpcServer.Serve(s.lis); err != nil {
+func (s *GRPCManager) Serve() {
+	if err := s.grpcServer.Serve(s.listener); err != nil {
 		panic(err)
 	}
 }
