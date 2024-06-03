@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/usermgmt/manager"
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/usermgmt/model"
 
@@ -20,7 +21,7 @@ func main() {
 	maxSize := 256 << 20
 	grpcOpts := []grpc.ServerOption{grpc.MaxRecvMsgSize(maxSize), grpc.MaxSendMsgSize(maxSize)}
 
-	m := manager.NewManager("127.0.0.1:50052", grpcOpts, db)
+	m := manager.NewManager("127.0.0.1:50050", grpcOpts, db)
 	go m.Serve()
 
 	channel := make(chan string)

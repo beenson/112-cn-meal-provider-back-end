@@ -23,10 +23,14 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserManagementServiceClient interface {
+	// deprecated
 	PreAuth(ctx context.Context, in *UserID, opts ...grpc.CallOption) (*Challenge, error)
 	Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*common.AuthToken, error)
 	RegisterUser(ctx context.Context, in *RegisterUserRequest, opts ...grpc.CallOption) (*common.Status, error)
 	UnregisterUser(ctx context.Context, in *UnregisterUserRequest, opts ...grpc.CallOption) (*common.Status, error)
+	// on board rpc
+	GetSysUsers(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserReply, error)
+	GetUserByIds(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserReply, error)
 }
 
 type userManagementServiceClient struct {
@@ -73,14 +77,36 @@ func (c *userManagementServiceClient) UnregisterUser(ctx context.Context, in *Un
 	return out, nil
 }
 
+func (c *userManagementServiceClient) GetSysUsers(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserReply, error) {
+	out := new(GetUserReply)
+	err := c.cc.Invoke(ctx, "/meal_provider.UserManagementService/GetSysUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userManagementServiceClient) GetUserByIds(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserReply, error) {
+	out := new(GetUserReply)
+	err := c.cc.Invoke(ctx, "/meal_provider.UserManagementService/GetUserByIds", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserManagementServiceServer is the server API for UserManagementService service.
 // All implementations must embed UnimplementedUserManagementServiceServer
 // for forward compatibility
 type UserManagementServiceServer interface {
+	// deprecated
 	PreAuth(context.Context, *UserID) (*Challenge, error)
 	Auth(context.Context, *AuthRequest) (*common.AuthToken, error)
 	RegisterUser(context.Context, *RegisterUserRequest) (*common.Status, error)
 	UnregisterUser(context.Context, *UnregisterUserRequest) (*common.Status, error)
+	// on board rpc
+	GetSysUsers(context.Context, *GetUserRequest) (*GetUserReply, error)
+	GetUserByIds(context.Context, *GetUserRequest) (*GetUserReply, error)
 	mustEmbedUnimplementedUserManagementServiceServer()
 }
 
@@ -99,6 +125,12 @@ func (UnimplementedUserManagementServiceServer) RegisterUser(context.Context, *R
 }
 func (UnimplementedUserManagementServiceServer) UnregisterUser(context.Context, *UnregisterUserRequest) (*common.Status, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterUser not implemented")
+}
+func (UnimplementedUserManagementServiceServer) GetSysUsers(context.Context, *GetUserRequest) (*GetUserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSysUsers not implemented")
+}
+func (UnimplementedUserManagementServiceServer) GetUserByIds(context.Context, *GetUserRequest) (*GetUserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByIds not implemented")
 }
 func (UnimplementedUserManagementServiceServer) mustEmbedUnimplementedUserManagementServiceServer() {}
 
@@ -185,6 +217,42 @@ func _UserManagementService_UnregisterUser_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserManagementService_GetSysUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserManagementServiceServer).GetSysUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/meal_provider.UserManagementService/GetSysUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserManagementServiceServer).GetSysUsers(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserManagementService_GetUserByIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserManagementServiceServer).GetUserByIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/meal_provider.UserManagementService/GetUserByIds",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserManagementServiceServer).GetUserByIds(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserManagementService_ServiceDesc is the grpc.ServiceDesc for UserManagementService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -207,6 +275,14 @@ var UserManagementService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnregisterUser",
 			Handler:    _UserManagementService_UnregisterUser_Handler,
+		},
+		{
+			MethodName: "GetSysUsers",
+			Handler:    _UserManagementService_GetSysUsers_Handler,
+		},
+		{
+			MethodName: "GetUserByIds",
+			Handler:    _UserManagementService_GetUserByIds_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

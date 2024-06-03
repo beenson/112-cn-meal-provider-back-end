@@ -5,8 +5,9 @@ import (
 	"crypto/rand"
 	b64 "encoding/base64"
 	"fmt"
-	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/usermgmt/model"
 	"time"
+
+	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/usermgmt/model"
 
 	"github.com/jamesruan/sodium"
 	common "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/common"
@@ -88,16 +89,6 @@ func (m *GRPCManager) Auth(ctx context.Context, req *protocol.AuthRequest) (*com
 	}, nil
 }
 
-type User struct {
-	ID         uint   `gorm:"primaryKey"`
-	Uid        string `gorm:"uniqueIndex"`
-	Group      string
-	Username   string
-	Department string
-	Email      string
-	PublicKey  string
-}
-
 func (m *GRPCManager) RegisterUser(ctx context.Context, req *protocol.RegisterUserRequest) (*common.Status, error) {
 	// TODO: Auth admin user to do the operation
 	user := model.User{
@@ -123,4 +114,40 @@ func (m *GRPCManager) UnregisterUser(ctx context.Context, req *protocol.Unregist
 	return &common.Status{
 		Code: &code,
 	}, nil
+}
+
+func (m *GRPCManager) GetSysUsers(context.Context, *protocol.GetUserRequest) (*protocol.GetUserReply, error) {
+	var reply protocol.GetUserReply
+	var users []model.User
+	if res := m.db.Find(&users); res.Error != nil {
+		return nil, res.Error
+	}
+	for i := 0; i < len(users); i++ {
+		reply.Uinfo = append(reply.Uinfo, &common.UserInfo{
+			Id:         &users[i].Uid,
+			Name:       &users[i].Username,
+			Group:      &users[i].Group,
+			Department: &users[i].Department,
+			Email:      &users[i].Email,
+		})
+	}
+	return &reply, nil
+}
+
+func (m *GRPCManager) GetUserByIds(ctx context.Context, req *protocol.GetUserRequest) (*protocol.GetUserReply, error) {
+	var reply protocol.GetUserReply
+	var users []model.User
+	if res := m.db.Where("uid IN ?", req.UList.Uid).Find(&users); res.Error != nil {
+		return nil, res.Error
+	}
+	for i := 0; i < len(users); i++ {
+		reply.Uinfo = append(reply.Uinfo, &common.UserInfo{
+			Id:         &users[i].Uid,
+			Name:       &users[i].Username,
+			Group:      &users[i].Group,
+			Department: &users[i].Department,
+			Email:      &users[i].Email,
+		})
+	}
+	return &reply, nil
 }
