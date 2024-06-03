@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/usermgmt/manager"
+	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/usermgmt/model"
 
-	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/src/micro-svcs/user_mgmt/manager"
-	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/src/micro-svcs/user_mgmt/model"
 	"google.golang.org/grpc"
 )
 

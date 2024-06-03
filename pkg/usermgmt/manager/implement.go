@@ -5,12 +5,12 @@ import (
 	"crypto/rand"
 	b64 "encoding/base64"
 	"fmt"
+	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/usermgmt/model"
 	"time"
 
 	"github.com/jamesruan/sodium"
 	common "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/common"
 	protocol "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/user_mgmt"
-	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/src/micro-svcs/user_mgmt/model"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )
