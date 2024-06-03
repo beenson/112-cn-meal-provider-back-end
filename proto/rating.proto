@@ -2,3 +2,42 @@ syntax = "proto2";
 package meal_provider;
 import "common.proto";
 option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/rating;rating";
+
+message Feedback  {
+    required int32 foodId = 1;
+    required string uid = 2;
+    required int32 rating = 3;
+    required string comment = 4;
+}
+
+message UserId {
+    required string id = 1;
+}
+
+message FoodId{
+    required int32 id = 1;
+    optional int32 rate = 2;
+}
+
+message CommentId{
+    required int32 id = 1;
+}
+
+message FeedbackList  {
+    repeated Feedback list = 1;
+}
+
+message UpdateRequest {
+    required CommentId id = 1;
+    required Feedback fb = 2;
+}
+
+service FoodRatingService {
+    rpc CreateFeedback(Feedback) returns(CommentId);
+    rpc ReadFeedbackByUserId(UserId) returns(FeedbackList);
+    rpc ReadFeedbackByFoodId(FoodId) returns(FeedbackList);
+    rpc ReadFeedbackByFoodRating(FoodId) returns(FeedbackList);
+    rpc ReadFeedbackByCommentId(CommentId) returns(Feedback);
+    rpc UpdateFeedback(UpdateRequest) returns(Status);
+    rpc DeleteFeedback(CommentId) returns(Status);
+}
