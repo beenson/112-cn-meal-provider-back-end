@@ -11,6 +11,10 @@ import (
 )
 
 func gRPCPaymentToModelPayment(p *pb.Payment) (*model.Payment, error) {
+	if p == nil {
+		return nil, nil
+	}
+
 	id, err := strconv.Atoi(p.Id.Id)
 	if err != nil {
 		return nil, err
@@ -29,6 +33,10 @@ func gRPCPaymentToModelPayment(p *pb.Payment) (*model.Payment, error) {
 }
 
 func modelPaymentTogRPCPayment(p *model.Payment) (*pb.Payment, error) {
+	if p == nil {
+		return nil, nil
+	}
+
 	return &pb.Payment{
 		Id:        &pb.PaymentID{Id: strconv.Itoa(int(p.ID))},
 		CreatedAt: timestamppb.New(p.CreatedAt),

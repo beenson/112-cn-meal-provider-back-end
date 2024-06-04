@@ -17,65 +17,17 @@ func main() {
 		panic(err)
 	}
 
-	userId := "1234"
-
-	bill, err := clientSvc.CreateBill(context.Background(), userId, "abc", 10)
+	p, err := clientSvc.GetPayment(context.Background(), 8888)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Create Bill: %+v\n", bill)
+	fmt.Printf("Get Payment with 8888: %+v\n", p)
 
-	{
-		b, err := clientSvc.GetBill(context.Background(), bill.ID)
-		if err != nil {
-			return
-		}
-
-		fmt.Printf("Get Bill: %+v\n", b)
-	}
-
-	{
-		_, err := clientSvc.CreateBill(context.Background(), userId, "def", 20)
-		if err != nil {
-			panic(err)
-		}
-
-		b, err := clientSvc.GetBills(context.Background(), userId)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("Get Bills: %+v\n", b)
-	}
-
-	payment, err := clientSvc.CreatePayment(context.Background(), userId, 30)
+	payments, err := clientSvc.GetPayments(context.Background(), "8888")
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Create Payment: %+v\n", payment)
-
-	{
-		p, err := clientSvc.GetPayment(context.Background(), payment.ID)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("Get Payment: %+v\n", p)
-	}
-
-	{
-		_, err := clientSvc.CreatePayment(context.Background(), userId, 20)
-		if err != nil {
-			panic(err)
-		}
-
-		b, err := clientSvc.GetPayments(context.Background(), userId)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("Get Payments: %+v\n", b)
-	}
+	fmt.Printf("Get Payments with 8888: %+v\n", payments)
 }

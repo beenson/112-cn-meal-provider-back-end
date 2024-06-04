@@ -11,6 +11,10 @@ import (
 )
 
 func gRPCBillToModelBill(bill *pb.Bill) (*model.Bill, error) {
+	if bill == nil {
+		return nil, nil
+	}
+
 	id, err := strconv.Atoi(bill.Id.Id)
 	if err != nil {
 		return nil, err
@@ -29,6 +33,10 @@ func gRPCBillToModelBill(bill *pb.Bill) (*model.Bill, error) {
 }
 
 func modelBillTogRPCBill(bill *model.Bill) (*pb.Bill, error) {
+	if bill == nil {
+		return nil, nil
+	}
+
 	return &pb.Bill{
 		Id:        &pb.BillID{Id: strconv.Itoa(int(bill.ID))},
 		CreatedAt: timestamppb.New(bill.CreatedAt),
