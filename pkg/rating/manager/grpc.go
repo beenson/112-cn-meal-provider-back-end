@@ -3,9 +3,9 @@ package manager
 import (
 	context "context"
 
-	common "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/common"
-	protocol "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/rating"
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/rating/model"
+	common "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/common"
+	protocol "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/rating"
 )
 
 func (m *GRPCManager) CreateFeedback(ctx context.Context, fb *protocol.Feedback) (*protocol.CommentId, error) {
