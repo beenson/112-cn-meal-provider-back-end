@@ -85,6 +85,7 @@ func (s *Server) CreatePayment(ctx context.Context, req *pb.CreatePaymentRequest
 		CreatedPayment: p,
 	}, nil
 }
+
 func (s *Server) GetBill(ctx context.Context, req *pb.GetBillRequest) (*pb.GetBillResponse, error) {
 	id, err := strconv.Atoi(req.Id.Id)
 	if err != nil {
@@ -105,6 +106,7 @@ func (s *Server) GetBill(ctx context.Context, req *pb.GetBillRequest) (*pb.GetBi
 		Bill: b,
 	}, nil
 }
+
 func (s *Server) GetBills(ctx context.Context, req *pb.GetBillsRequest) (*pb.GetBillsResponse, error) {
 	params := req.QueryParams
 
@@ -120,5 +122,44 @@ func (s *Server) GetBills(ctx context.Context, req *pb.GetBillsRequest) (*pb.Get
 
 	return &pb.GetBillsResponse{
 		Bills: pbBills,
+	}, nil
+}
+
+func (s *Server) GetPayment(ctx context.Context, req *pb.GetPaymentRequest) (*pb.GetPaymentResponse, error) {
+	id, err := strconv.Atoi(req.Id.Id)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	payment, err := s.svc.GetPayment(ctx, uint(id))
+	if err != nil {
+		return nil, err
+	}
+
+	p, err := modelPaymentTogRPCPayment(payment)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetPaymentResponse{
+		Payment: p,
+	}, nil
+}
+
+func (s *Server) GetPayments(ctx context.Context, req *pb.GetPaymentsRequest) (*pb.GetPaymentsResponse, error) {
+	params := req.QueryParams
+
+	modelPayments, err := s.svc.GetPayments(ctx, *params.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	pbPayments := make([]*pb.Payment, len(modelPayments))
+	for i, p := range modelPayments {
+		pbPayments[i], err = modelPaymentTogRPCPayment(&p)
+	}
+
+	return &pb.GetPaymentsResponse{
+		Payments: pbPayments,
 	}, nil
 }

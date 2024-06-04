@@ -48,4 +48,34 @@ func main() {
 
 		fmt.Printf("Get Bills: %+v\n", b)
 	}
+
+	payment, err := clientSvc.CreatePayment(context.Background(), userId, 30)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Create Payment: %+v\n", payment)
+
+	{
+		p, err := clientSvc.GetPayment(context.Background(), payment.ID)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("Get Payment: %+v\n", p)
+	}
+
+	{
+		_, err := clientSvc.CreatePayment(context.Background(), userId, 20)
+		if err != nil {
+			panic(err)
+		}
+
+		b, err := clientSvc.GetPayments(context.Background(), userId)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("Get Payments: %+v\n", b)
+	}
 }

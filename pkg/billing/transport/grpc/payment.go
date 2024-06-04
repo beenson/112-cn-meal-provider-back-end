@@ -30,7 +30,7 @@ func gRPCPaymentToModelPayment(p *pb.Payment) (*model.Payment, error) {
 
 func modelPaymentTogRPCPayment(p *model.Payment) (*pb.Payment, error) {
 	return &pb.Payment{
-		Id:        &pb.PaymentId{Id: strconv.Itoa(int(p.ID))},
+		Id:        &pb.PaymentID{Id: strconv.Itoa(int(p.ID))},
 		CreatedAt: timestamppb.New(p.CreatedAt),
 		UpdatedAt: timestamppb.New(p.UpdatedAt),
 

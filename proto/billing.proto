@@ -7,14 +7,14 @@ import "common.proto";
 
 option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/billing;billing";
 
-// Id of a Bill object.
-message BillId {
+// ID of a Bill object.
+message BillID {
   string id = 1;
 }
 
 // A Bill object exposed in APIs.
 message Bill {
-  BillId id = 1;
+  BillID id = 1;
   google.protobuf.Timestamp created_at = 2;
   google.protobuf.Timestamp updated_at = 3;
 
@@ -23,13 +23,14 @@ message Bill {
   int32 amount = 6;
 }
 
-message PaymentId {
+// ID of a Payment object.
+message PaymentID {
   string id = 1;
 }
 
 // A Payment object exposed in APIs.
 message Payment {
-  PaymentId id = 1;
+  PaymentID id = 1;
   google.protobuf.Timestamp created_at = 2;
   google.protobuf.Timestamp updated_at = 3;
 
@@ -43,6 +44,9 @@ message CreateBillInput {
   string order_id = 2;
   int32 amount = 3;
 }
+
+// ==========
+// CreateBill
 
 message CreateBillRequest {
   CreateBillInput input = 1;
@@ -58,6 +62,9 @@ message CreatePaymentInput {
   int32 amount = 2;
 }
 
+// =============
+// CreatePayment
+
 message CreatePaymentRequest {
   CreatePaymentInput input = 1;
 }
@@ -66,8 +73,11 @@ message CreatePaymentResponse {
   Payment created_payment = 1;
 }
 
+// =======
+// GetBill
+
 message GetBillRequest {
-  BillId id = 1;
+  BillID id = 1;
 }
 
 message GetBillResponse {
@@ -80,6 +90,9 @@ message QueryBillParams {
   optional string order_id = 2;
 }
 
+// ========
+// GetBills
+
 message GetBillsRequest {
   QueryBillParams query_params = 1;
 }
@@ -88,10 +101,40 @@ message GetBillsResponse {
   repeated Bill bills = 1;
 }
 
+// ==========
+// GetPayment
+
+message GetPaymentRequest {
+  PaymentID id = 1;
+}
+
+message GetPaymentResponse {
+  optional Payment payment = 1;
+}
+
+// Parameters for querying payments.
+message QueryPaymentParams {
+  optional string user_id = 1;
+}
+
+// ===========
+// GetPayments
+
+message GetPaymentsRequest {
+  QueryPaymentParams query_params = 1;
+}
+
+message GetPaymentsResponse {
+  repeated Payment payments = 1;
+}
+
 service BillingService {
   rpc CreateBill(CreateBillRequest) returns (CreateBillResponse);
   rpc CreatePayment(CreatePaymentRequest) returns (CreatePaymentResponse);
 
   rpc GetBill(GetBillRequest) returns (GetBillResponse);
   rpc GetBills(GetBillsRequest) returns (GetBillsResponse);
+
+  rpc GetPayment(GetPaymentRequest) returns (GetPaymentResponse);
+  rpc GetPayments(GetPaymentsRequest) returns (GetPaymentsResponse);
 }

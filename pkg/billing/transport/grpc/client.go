@@ -72,7 +72,7 @@ func (c *gRPCClient) CreatePayment(ctx context.Context, userId string, amount in
 
 func (c *gRPCClient) GetBill(ctx context.Context, id uint) (*model.Bill, error) {
 	request := &pb.GetBillRequest{
-		Id: &pb.BillId{Id: strconv.Itoa(int(id))},
+		Id: &pb.BillID{Id: strconv.Itoa(int(id))},
 	}
 
 	resp, err := c.gRPC.GetBill(ctx, request)
@@ -114,9 +114,44 @@ func (c *gRPCClient) GetBills(ctx context.Context, userId string) ([]model.Bill,
 }
 
 func (c *gRPCClient) GetPayment(ctx context.Context, id uint) (*model.Payment, error) {
-	panic("implement me")
+	request := &pb.GetPaymentRequest{
+		Id: &pb.PaymentID{Id: strconv.Itoa(int(id))},
+	}
+
+	resp, err := c.gRPC.GetPayment(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	p, err := gRPCPaymentToModelPayment(resp.Payment)
+	if err != nil {
+		return nil, err
+	}
+
+	return p, nil
 }
 
 func (c *gRPCClient) GetPayments(ctx context.Context, userId string) ([]model.Payment, error) {
-	panic("implement me")
+	request := &pb.GetPaymentsRequest{
+		QueryParams: &pb.QueryPaymentParams{
+			UserId: &userId,
+		},
+	}
+
+	resp, err := c.gRPC.GetPayments(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	payments := make([]model.Payment, len(resp.Payments))
+	for i, payment := range resp.Payments {
+		p, err := gRPCPaymentToModelPayment(payment)
+		if err != nil {
+			return nil, err
+		}
+
+		payments[i] = *p
+	}
+
+	return payments, nil
 }

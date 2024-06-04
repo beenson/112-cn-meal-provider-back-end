@@ -30,7 +30,7 @@ func gRPCBillToModelBill(bill *pb.Bill) (*model.Bill, error) {
 
 func modelBillTogRPCBill(bill *model.Bill) (*pb.Bill, error) {
 	return &pb.Bill{
-		Id:        &pb.BillId{Id: strconv.Itoa(int(bill.ID))},
+		Id:        &pb.BillID{Id: strconv.Itoa(int(bill.ID))},
 		CreatedAt: timestamppb.New(bill.CreatedAt),
 		UpdatedAt: timestamppb.New(bill.UpdatedAt),
 
