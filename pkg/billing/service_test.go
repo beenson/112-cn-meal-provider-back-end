@@ -1,6 +1,7 @@
 package billing
 
 import (
+	"context"
 	"errors"
 	"os"
 	"path"
@@ -116,7 +117,7 @@ func TestBillingService_CreateBill(t *testing.T) {
 	orderId := "abc"
 	amount := 10
 
-	bill, err := svc.CreateBill(userId, orderId, amount)
+	bill, err := svc.CreateBill(context.Background(), userId, orderId, amount)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,7 +144,7 @@ func TestBillingService_CreatePayment(t *testing.T) {
 	userId := "1234"
 	amount := 10
 
-	payment, err := svc.CreatePayment(userId, amount)
+	payment, err := svc.CreatePayment(context.Background(), userId, amount)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -168,12 +169,12 @@ func TestBillingService_GetBill(t *testing.T) {
 		orderId := "abc"
 		amount := 10
 
-		b1, err := svc.CreateBill(userId, orderId, amount)
+		b1, err := svc.CreateBill(context.Background(), userId, orderId, amount)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		bill, err := svc.GetBill(b1.ID)
+		bill, err := svc.GetBill(context.Background(), b1.ID)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -187,7 +188,7 @@ func TestBillingService_GetBill(t *testing.T) {
 		svc := setupService(t)
 		defer cleanupService()
 
-		b, err := svc.GetBill(1)
+		b, err := svc.GetBill(context.Background(), 1)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -205,17 +206,17 @@ func TestBillingService_GetBills(t *testing.T) {
 
 		userId := "1234"
 
-		b1, err := svc.CreateBill(userId, "abc", 22)
+		b1, err := svc.CreateBill(context.Background(), userId, "abc", 22)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b2, err := svc.CreateBill(userId, "def", 13)
+		b2, err := svc.CreateBill(context.Background(), userId, "def", 13)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		bills, err := svc.GetBills(userId)
+		bills, err := svc.GetBills(context.Background(), userId)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -237,12 +238,12 @@ func TestBillingService_GetPayment(t *testing.T) {
 		userId := "1234"
 		amount := 10
 
-		p1, err := svc.CreatePayment(userId, amount)
+		p1, err := svc.CreatePayment(context.Background(), userId, amount)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		payment, err := svc.GetPayment(p1.ID)
+		payment, err := svc.GetPayment(context.Background(), p1.ID)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -254,7 +255,7 @@ func TestBillingService_GetPayment(t *testing.T) {
 		svc := setupService(t)
 		defer cleanupService()
 
-		p, err := svc.GetPayment(1)
+		p, err := svc.GetPayment(context.Background(), 1)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -272,17 +273,17 @@ func TestBillingService_GetPayments(t *testing.T) {
 
 		userId := "1234"
 
-		p1, err := svc.CreatePayment(userId, 10)
+		p1, err := svc.CreatePayment(context.Background(), userId, 10)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		p2, err := svc.CreatePayment(userId, 10)
+		p2, err := svc.CreatePayment(context.Background(), userId, 10)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		payments, err := svc.GetPayments(userId)
+		payments, err := svc.GetPayments(context.Background(), userId)
 		if err != nil {
 			t.Fatal(err)
 		}
