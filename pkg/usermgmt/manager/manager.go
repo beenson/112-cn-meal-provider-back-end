@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 
-	protocol "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/user_mgmt"
+	protocol "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/user_mgmt"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )

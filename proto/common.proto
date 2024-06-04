@@ -1,7 +1,7 @@
 syntax = "proto2";
 package meal_provider;
 // import "google/protobuf/timestamp.proto";
-option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/common;common";
+option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/common;common";
 
 
 message AuthToken {

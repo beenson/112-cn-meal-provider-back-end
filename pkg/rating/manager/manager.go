@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 
-	protocol "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/rating"
+	protocol "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/rating"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )

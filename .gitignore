@@ -30,4 +30,7 @@ go.work.sum
 # IDE directories
 .idea/
 
+# Protobuf generated
+proto/gen/
+
 cmd/client/

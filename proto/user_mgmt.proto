@@ -1,7 +1,7 @@
 syntax = "proto2";
 package meal_provider;
 import "common.proto";
-option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/user_mgmt;user_mgmt";
+option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/user_mgmt;user_mgmt";
 
 message UserID {
     required string id = 1;

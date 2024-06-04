@@ -10,8 +10,8 @@ import (
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/usermgmt/model"
 
 	"github.com/jamesruan/sodium"
-	common "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/common"
-	protocol "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/user_mgmt"
+	common "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/common"
+	protocol "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/user_mgmt"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )
