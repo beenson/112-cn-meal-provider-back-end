@@ -1,4 +1,48 @@
-syntax = "proto2";
+syntax = "proto3";
 package meal_provider;
+
+import "google/protobuf/timestamp.proto";
+
 import "common.proto";
+
 option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/billing;billing";
+
+// A Bill object exposed in APIs.
+message Bill {
+  string id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+
+  string user_id = 4;
+  string order_id = 5;
+  int32 amount = 6;
+}
+
+// A Payment object exposed in APIs.
+message Payment {
+  string id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+
+  string user_id = 4;
+  int32 amount = 5;
+}
+
+// A object with info to create bill
+message CreateBillInput {
+  string user_id = 1;
+  string order_id = 2;
+  int32 amount = 3;
+}
+
+message CreateBillRequest {
+  CreateBillInput input = 1;
+}
+
+message CreateBillResponse {
+  Bill created_bill = 1;
+}
+
+service BillingService {
+  rpc CreateBill(CreateBillRequest) returns (CreateBillResponse);
+}

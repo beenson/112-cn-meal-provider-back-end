@@ -1,6 +1,7 @@
 package billing
 
 import (
+	"context"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
@@ -8,14 +9,14 @@ import (
 )
 
 type Service interface {
-	CreateBill(userId string, orderId string, amount int) (*model.Bill, error)
-	CreatePayment(userId string, amount int) (*model.Payment, error)
+	CreateBill(ctx context.Context, userId string, orderId string, amount int) (*model.Bill, error)
+	CreatePayment(ctx context.Context, userId string, amount int) (*model.Payment, error)
 
-	GetBill(id uint) (*model.Bill, error)
-	GetBills(userId string) ([]model.Bill, error)
+	GetBill(ctx context.Context, id uint) (*model.Bill, error)
+	GetBills(ctx context.Context, userId string) ([]model.Bill, error)
 
-	GetPayment(id uint) (*model.Payment, error)
-	GetPayments(userId string) ([]model.Payment, error)
+	GetPayment(ctx context.Context, id uint) (*model.Payment, error)
+	GetPayments(ctx context.Context, userId string) ([]model.Payment, error)
 }
 
 type billingService struct {
@@ -26,7 +27,7 @@ func NewService(db *gorm.DB) Service {
 	return &billingService{db}
 }
 
-func (svc *billingService) CreateBill(userId string, orderId string, amount int) (*model.Bill, error) {
+func (svc *billingService) CreateBill(_ context.Context, userId string, orderId string, amount int) (*model.Bill, error) {
 	b := model.NewBill(userId, orderId, amount)
 
 	result := svc.db.Clauses(clause.Returning{}).Create(&b)
@@ -37,7 +38,7 @@ func (svc *billingService) CreateBill(userId string, orderId string, amount int)
 	return &b, nil
 }
 
-func (svc *billingService) CreatePayment(userId string, amount int) (*model.Payment, error) {
+func (svc *billingService) CreatePayment(_ context.Context, userId string, amount int) (*model.Payment, error) {
 	p := model.NewPayment(userId, amount)
 
 	result := svc.db.Clauses(clause.Returning{}).Create(&p)
@@ -48,7 +49,7 @@ func (svc *billingService) CreatePayment(userId string, amount int) (*model.Paym
 	return &p, nil
 }
 
-func (svc *billingService) GetBill(id uint) (*model.Bill, error) {
+func (svc *billingService) GetBill(_ context.Context, id uint) (*model.Bill, error) {
 	var b model.Bill
 
 	svc.db.First(&b, id)
@@ -59,7 +60,7 @@ func (svc *billingService) GetBill(id uint) (*model.Bill, error) {
 	return &b, nil
 }
 
-func (svc *billingService) GetBills(userId string) ([]model.Bill, error) {
+func (svc *billingService) GetBills(_ context.Context, userId string) ([]model.Bill, error) {
 	var bills []model.Bill
 
 	svc.db.Where("user_id = ?", userId).Find(&bills)
@@ -67,7 +68,7 @@ func (svc *billingService) GetBills(userId string) ([]model.Bill, error) {
 	return bills, nil
 }
 
-func (svc *billingService) GetPayment(id uint) (*model.Payment, error) {
+func (svc *billingService) GetPayment(_ context.Context, id uint) (*model.Payment, error) {
 	var p model.Payment
 
 	svc.db.First(&p, id)
@@ -78,7 +79,7 @@ func (svc *billingService) GetPayment(id uint) (*model.Payment, error) {
 	return &p, nil
 }
 
-func (svc *billingService) GetPayments(userId string) ([]model.Payment, error) {
+func (svc *billingService) GetPayments(_ context.Context, userId string) ([]model.Payment, error) {
 	var payments []model.Payment
 
 	svc.db.Where("user_id = ?", userId).Find(&payments)
