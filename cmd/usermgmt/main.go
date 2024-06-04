@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/caarlos0/env/v11"
 
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/usermgmt/manager"
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/usermgmt/model"
@@ -10,7 +11,12 @@ import (
 )
 
 func main() {
-	db, err := model.CreateConnection()
+	cfg := config{}
+	if err := env.Parse(&cfg); err != nil {
+		panic(err)
+	}
+
+	db, err := cfg.DB.GetGormDB()
 	if err != nil {
 		fmt.Println(err)
 		panic("failed to connect database")
@@ -21,7 +27,7 @@ func main() {
 	maxSize := 256 << 20
 	grpcOpts := []grpc.ServerOption{grpc.MaxRecvMsgSize(maxSize), grpc.MaxSendMsgSize(maxSize)}
 
-	m := manager.NewManager("127.0.0.1:50050", grpcOpts, db)
+	m := manager.NewManager(cfg.GRPCAddress, grpcOpts, db)
 	go m.Serve()
 
 	channel := make(chan string)

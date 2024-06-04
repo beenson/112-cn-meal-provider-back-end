@@ -1,35 +1,37 @@
 package main
 
 import (
-	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/notification/sender/email"
-	"net/smtp"
-
+	"github.com/caarlos0/env/v11"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/notification"
+	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/notification/sender/email"
 	grpcTransport "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/notification/transport/grpc"
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/notification/userinfo"
 )
 
 func main() {
+	cfg := config{}
+	if err := env.Parse(&cfg); err != nil {
+		panic(err)
+	}
+
 	userProvider, err := userinfo.NewProvider(
-		"localhost:50050", grpc.WithTransportCredentials(insecure.NewCredentials()),
+		cfg.Service.UserMgmtTarget, grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	mailSender := email.NewSMTPSender("",
-		smtp.PlainAuth("", "", "", ""),
-	)
+	mailSender := email.NewFakeEmailSender()
 
-	svc := notification.NewService(userProvider, mailSender, "")
+	svc := notification.NewService(userProvider, mailSender, cfg.EmailFromAddress)
 
 	maxSize := 256 << 20
 	grpcOpts := []grpc.ServerOption{grpc.MaxRecvMsgSize(maxSize), grpc.MaxSendMsgSize(maxSize)}
 
-	server, err := grpcTransport.NewServer("0.0.0.0:50052", grpcOpts, svc)
+	server, err := grpcTransport.NewServer(cfg.GRPCAddress, grpcOpts, svc)
 	if err != nil {
 		return
 	}

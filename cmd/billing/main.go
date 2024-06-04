@@ -1,9 +1,8 @@
 package main
 
 import (
+	"github.com/caarlos0/env/v11"
 	"google.golang.org/grpc"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/billing"
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/billing/model"
@@ -11,8 +10,12 @@ import (
 )
 
 func main() {
+	cfg := config{}
+	if err := env.Parse(&cfg); err != nil {
+		panic(err)
+	}
 
-	db, err := gorm.Open(sqlite.Open("billing.db"), &gorm.Config{})
+	db, err := cfg.DB.GetGormDB()
 	if err != nil {
 		panic(err)
 	}
@@ -27,7 +30,7 @@ func main() {
 	maxSize := 256 << 20
 	grpcOpts := []grpc.ServerOption{grpc.MaxRecvMsgSize(maxSize), grpc.MaxSendMsgSize(maxSize)}
 
-	server, err := grpcTransport.NewServer("0.0.0.0:50051", grpcOpts, svc)
+	server, err := grpcTransport.NewServer(cfg.GRPCAddress, grpcOpts, svc)
 	if err != nil {
 		return
 	}
