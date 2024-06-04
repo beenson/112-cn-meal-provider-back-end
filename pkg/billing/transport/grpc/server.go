@@ -6,7 +6,8 @@ import (
 	"strconv"
 
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	pb "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api/billing"
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/billing"
@@ -57,17 +58,67 @@ func (s *Server) CreateBill(
 		return nil, err
 	}
 
-	b := pb.Bill{
-		Id:        strconv.Itoa(int(bill.ID)),
-		CreatedAt: timestamppb.New(bill.CreatedAt),
-		UpdatedAt: timestamppb.New(bill.UpdatedAt),
-
-		UserId:  bill.UserId,
-		OrderId: bill.OrderId,
-		Amount:  int32(bill.Amount),
+	b, err := modelBillTogRPCBill(bill)
+	if err != nil {
+		return nil, err
 	}
 
 	return &pb.CreateBillResponse{
-		CreatedBill: &b,
+		CreatedBill: b,
+	}, nil
+}
+
+func (s *Server) CreatePayment(ctx context.Context, req *pb.CreatePaymentRequest) (*pb.CreatePaymentResponse, error) {
+	input := req.Input
+
+	payment, err := s.svc.CreatePayment(ctx, input.UserId, int(input.Amount))
+	if err != nil {
+		return nil, err
+	}
+
+	p, err := modelPaymentTogRPCPayment(payment)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CreatePaymentResponse{
+		CreatedPayment: p,
+	}, nil
+}
+func (s *Server) GetBill(ctx context.Context, req *pb.GetBillRequest) (*pb.GetBillResponse, error) {
+	id, err := strconv.Atoi(req.Id.Id)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	bill, err := s.svc.GetBill(ctx, uint(id))
+	if err != nil {
+		return nil, err
+	}
+
+	b, err := modelBillTogRPCBill(bill)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetBillResponse{
+		Bill: b,
+	}, nil
+}
+func (s *Server) GetBills(ctx context.Context, req *pb.GetBillsRequest) (*pb.GetBillsResponse, error) {
+	params := req.QueryParams
+
+	modelBills, err := s.svc.GetBills(ctx, *params.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	pbBills := make([]*pb.Bill, len(modelBills))
+	for i, bill := range modelBills {
+		pbBills[i], err = modelBillTogRPCBill(&bill)
+	}
+
+	return &pb.GetBillsResponse{
+		Bills: pbBills,
 	}, nil
 }

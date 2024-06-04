@@ -17,10 +17,35 @@ func main() {
 		panic(err)
 	}
 
-	bill, err := clientSvc.CreateBill(context.Background(), "1234", "abc", 10)
+	userId := "1234"
+
+	bill, err := clientSvc.CreateBill(context.Background(), userId, "abc", 10)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("Create Bill: %+v\n", bill)
+
+	{
+		b, err := clientSvc.GetBill(context.Background(), bill.ID)
+		if err != nil {
+			return
+		}
+
+		fmt.Printf("Get Bill: %+v\n", b)
+	}
+
+	{
+		_, err := clientSvc.CreateBill(context.Background(), userId, "def", 20)
+		if err != nil {
+			panic(err)
+		}
+
+		b, err := clientSvc.GetBills(context.Background(), userId)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("Get Bills: %+v\n", b)
+	}
 }

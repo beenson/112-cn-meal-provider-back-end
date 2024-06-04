@@ -7,9 +7,14 @@ import "common.proto";
 
 option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/billing;billing";
 
+// Id of a Bill object.
+message BillId {
+  string id = 1;
+}
+
 // A Bill object exposed in APIs.
 message Bill {
-  string id = 1;
+  BillId id = 1;
   google.protobuf.Timestamp created_at = 2;
   google.protobuf.Timestamp updated_at = 3;
 
@@ -18,9 +23,13 @@ message Bill {
   int32 amount = 6;
 }
 
+message PaymentId {
+  string id = 1;
+}
+
 // A Payment object exposed in APIs.
 message Payment {
-  string id = 1;
+  PaymentId id = 1;
   google.protobuf.Timestamp created_at = 2;
   google.protobuf.Timestamp updated_at = 3;
 
@@ -28,7 +37,7 @@ message Payment {
   int32 amount = 5;
 }
 
-// A object with info to create bill
+// A object with info to create bill.
 message CreateBillInput {
   string user_id = 1;
   string order_id = 2;
@@ -43,6 +52,46 @@ message CreateBillResponse {
   Bill created_bill = 1;
 }
 
+// A object with info to create payment.
+message CreatePaymentInput {
+  string user_id = 1;
+  int32 amount = 2;
+}
+
+message CreatePaymentRequest {
+  CreatePaymentInput input = 1;
+}
+
+message CreatePaymentResponse {
+  Payment created_payment = 1;
+}
+
+message GetBillRequest {
+  BillId id = 1;
+}
+
+message GetBillResponse {
+  optional Bill bill = 1;
+}
+
+// Parameters for querying bills.
+message QueryBillParams {
+  optional string user_id = 1;
+  optional string order_id = 2;
+}
+
+message GetBillsRequest {
+  QueryBillParams query_params = 1;
+}
+
+message GetBillsResponse {
+  repeated Bill bills = 1;
+}
+
 service BillingService {
   rpc CreateBill(CreateBillRequest) returns (CreateBillResponse);
+  rpc CreatePayment(CreatePaymentRequest) returns (CreatePaymentResponse);
+
+  rpc GetBill(GetBillRequest) returns (GetBillResponse);
+  rpc GetBills(GetBillsRequest) returns (GetBillsResponse);
 }
