@@ -32,11 +32,13 @@ func (m *GRPCManager) ReadFeedbackByUserId(ctx context.Context, uid *protocol.Us
 	}
 	for i := 0; i < len(feedbacks); i++ {
 		repId := int32(feedbacks[i].Foodid)
+		repId2 := int32(feedbacks[i].ID)
 		reply.List = append(reply.List, &protocol.Feedback{
 			FoodId:  &repId,
 			Uid:     &feedbacks[i].Uid,
 			Rating:  &feedbacks[i].Rating,
 			Comment: &feedbacks[i].Comment,
+			Id:      &repId2,
 		})
 	}
 	return &reply, nil
@@ -50,11 +52,13 @@ func (m *GRPCManager) ReadFeedbackByFoodId(ctx context.Context, foodId *protocol
 	}
 	for i := 0; i < len(feedbacks); i++ {
 		repId := int32(feedbacks[i].Foodid)
+		repId2 := int32(feedbacks[i].ID)
 		reply.List = append(reply.List, &protocol.Feedback{
 			FoodId:  &repId,
 			Uid:     &feedbacks[i].Uid,
 			Rating:  &feedbacks[i].Rating,
 			Comment: &feedbacks[i].Comment,
+			Id:      &repId2,
 		})
 	}
 	return &reply, nil
@@ -68,11 +72,13 @@ func (m *GRPCManager) ReadFeedbackByFoodRating(ctx context.Context, foodId *prot
 	}
 	for i := 0; i < len(feedbacks); i++ {
 		repId := int32(feedbacks[i].Foodid)
+		repId2 := int32(feedbacks[i].ID)
 		reply.List = append(reply.List, &protocol.Feedback{
 			FoodId:  &repId,
 			Uid:     &feedbacks[i].Uid,
 			Rating:  &feedbacks[i].Rating,
 			Comment: &feedbacks[i].Comment,
+			Id:      &repId2,
 		})
 	}
 	return &reply, nil
@@ -85,11 +91,13 @@ func (m *GRPCManager) ReadFeedbackByCommentId(ctx context.Context, commentId *pr
 	}
 	var reply protocol.FeedbackList
 	repId := int32(feedback.Foodid)
+	repId2 := int32(feedback.ID)
 	reply.List = append(reply.List, &protocol.Feedback{
 		FoodId:  &repId,
 		Uid:     &feedback.Uid,
 		Rating:  &feedback.Rating,
 		Comment: &feedback.Comment,
+		Id:      &repId2,
 	})
 	return &reply, nil
 }

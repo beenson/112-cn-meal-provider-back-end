@@ -8,6 +8,7 @@ message Feedback  {
     required string uid = 2;
     required int32 rating = 3;
     required string comment = 4;
+    optional int32 id = 5;
 }
 
 message UserId {
