@@ -78,18 +78,20 @@ func (m *GRPCManager) ReadFeedbackByFoodRating(ctx context.Context, foodId *prot
 	return &reply, nil
 }
 
-func (m *GRPCManager) ReadFeedbackByCommentId(ctx context.Context, commentId *protocol.CommentId) (*protocol.Feedback, error) {
+func (m *GRPCManager) ReadFeedbackByCommentId(ctx context.Context, commentId *protocol.CommentId) (*protocol.FeedbackList, error) {
 	var feedback model.Feedback
 	if res := m.db.Where("ID = ?", commentId.Id).Find(&feedback); res.Error != nil {
 		return nil, res.Error
 	}
+	var reply protocol.FeedbackList
 	repId := int32(feedback.Foodid)
-	return &protocol.Feedback{
+	reply.List = append(reply.List, &protocol.Feedback{
 		FoodId:  &repId,
 		Uid:     &feedback.Uid,
 		Rating:  &feedback.Rating,
 		Comment: &feedback.Comment,
-	}, nil
+	})
+	return &reply, nil
 }
 
 func (m *GRPCManager) UpdateFeedback(ctx context.Context, fb *protocol.UpdateRequest) (*common.Status, error) {

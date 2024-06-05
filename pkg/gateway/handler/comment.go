@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/api"
@@ -11,47 +12,60 @@ import (
 )
 
 func GetComment(w http.ResponseWriter, r *http.Request) {
-	// if !auth(&w, r, "") {
-	// 	return
-	// }
-	// w.Header().Set("Content-Type", "application/json")
-	// 	var msg api.ReadCommentMsg
-	// 	decoder := json.NewDecoder(r.Body)
-	// 	err := decoder.Decode(&msg)
-	// 	if err != nil {
-	// 		sendJSONError(w, "Could not parse json body !", http.StatusInternalServerError)
-	// 		return
-	// 	}
-	// 	fmt.Printf("Received payload: %+v\n", msg)
-	// 	conn, err := newClient(ratingTarget)
-	// 	if err != nil {
-	// 		sendJSONError(w, "Could not connect to rating service!", http.StatusInternalServerError)
-	// 		return
-	// 	}
-	// 	client := rating.NewFoodRatingServiceClient(conn)
-	// 	if msg.CommentId != 0 {
-	// 		// 	resp, err := client.ReadFeedbackByCommentId(context.Background(), &rating.CommentId{
-	// 		// 		Id: &msg.CommentId,
-	// 		// 	})
-	// 		// } else if msg.FoodId != 0 {
-	// 		// 	if msg.Rate != 0 {
-	// 		// 		resp, err := client.ReadFeedbackByFoodRating(context.Background(), &rating.CommentId{
-	// 		// 			Id: &msg.CommentId,
-	// 		// 		})
-	// 		// 	}
+	if !auth(&w, r, "") {
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	var msg api.ReadCommentMsg
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&msg)
+	if err != nil {
+		sendJSONError(w, "Could not parse json body !", http.StatusInternalServerError)
+		return
+	}
+	fmt.Printf("Received payload: %+v\n", msg)
+	conn, err := newClient(ratingTarget)
+	if err != nil {
+		sendJSONError(w, "Could not connect to rating service!", http.StatusInternalServerError)
+		return
+	}
+	client := rating.NewFoodRatingServiceClient(conn)
 
-	// 	}
-	// 	if err != nil {
-	// 		sendJSONError(w, err.Error(), http.StatusBadRequest)
-	// 		return
-	// 	}
-	// 	conn.Close()
-	// 	jsonBytes, err := protojson.Marshal(resp)
-	// 	if err != nil {
-	// 		sendJSONError(w, err.Error(), http.StatusBadRequest)
-	// 	}
-	// 	w.Header().Set("Content-Type", "application/json")
-	// 	w.Write(jsonBytes)
+	var resp []rating.Feedback
+	if msg.CommentId != 0 {
+		resp, err = client.ReadFeedbackByCommentId(context.Background(), &rating.CommentId{
+			Id: &msg.CommentId,
+		})
+	} else if msg.FoodId != 0 {
+		if msg.Rate != 0 {
+			resp, err = client.ReadFeedbackByFoodRating(context.Background(), &rating.FoodId{
+				Id:   &msg.FoodId,
+				Rate: &msg.Rate,
+			})
+		} else {
+			resp, err = client.ReadFeedbackByFoodId(context.Background(), &rating.FoodId{
+				Id: &msg.FoodId,
+			})
+		}
+	} else if msg.Uid != "" {
+		resp, err = client.ReadFeedbackByUserId(context.Background(), &rating.UserId{
+			Id: &msg.Uid,
+		})
+	} else {
+		sendJSONError(w, "Invalid Payload", http.StatusBadRequest)
+		return
+	}
+	if err != nil {
+		sendJSONError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	conn.Close()
+	jsonBytes, err := protojson.Marshal(resp)
+	if err != nil {
+		sendJSONError(w, err.Error(), http.StatusBadRequest)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonBytes)
 }
 
 func PostComment(w http.ResponseWriter, r *http.Request) {

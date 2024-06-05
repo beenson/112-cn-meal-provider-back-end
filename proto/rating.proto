@@ -37,7 +37,7 @@ service FoodRatingService {
     rpc ReadFeedbackByUserId(UserId) returns(FeedbackList);
     rpc ReadFeedbackByFoodId(FoodId) returns(FeedbackList);
     rpc ReadFeedbackByFoodRating(FoodId) returns(FeedbackList);
-    rpc ReadFeedbackByCommentId(CommentId) returns(Feedback);
+    rpc ReadFeedbackByCommentId(CommentId) returns(FeedbackList);
     rpc UpdateFeedback(UpdateRequest) returns(Status);
     rpc DeleteFeedback(CommentId) returns(Status);
 }
