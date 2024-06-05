@@ -31,7 +31,7 @@ func GetComment(w http.ResponseWriter, r *http.Request) {
 	}
 	client := rating.NewFoodRatingServiceClient(conn)
 
-	var resp []rating.Feedback
+	var resp *rating.FeedbackList
 	if msg.CommentId != 0 {
 		resp, err = client.ReadFeedbackByCommentId(context.Background(), &rating.CommentId{
 			Id: &msg.CommentId,
