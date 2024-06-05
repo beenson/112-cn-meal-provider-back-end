@@ -18,6 +18,7 @@ spec:
       clusterNames:
         - cn-gke-1
         - cn-gke-2
+        - cn-gke-3
     replicaScheduling:
       replicaDivisionPreference: Weighted
       replicaSchedulingType: Divided
@@ -31,3 +32,7 @@ spec:
               clusterNames:
                 - cn-gke-2
             weight: 3
+          - targetCluster:
+              clusterNames:
+                - cn-gke-3
+            weight: 2

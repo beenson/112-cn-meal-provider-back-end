@@ -6,18 +6,16 @@ spec:
   resourceSelectors:
     - apiVersion: apps/v1
       kind: Deployment
-      name: backend-deployment-order
+      name: backend-deployment-ordering
     - apiVersion: v1
       kind: Service
-      name: backend-service-order
-    - apiVersion: gateway.networking.k8s.io/v1
-      kind: HTTPRoute
-      name: http-backend-order
+      name: backend-service-ordering
   placement:
     clusterAffinity:
       clusterNames:
         - cn-gke-1
         - cn-gke-2
+        - cn-gke-3
     replicaScheduling:
       replicaDivisionPreference: Weighted
       replicaSchedulingType: Divided
@@ -31,3 +29,7 @@ spec:
               clusterNames:
                 - cn-gke-2
             weight: 3
+          - targetCluster:
+              clusterNames:
+                - cn-gke-3
+            weight: 2

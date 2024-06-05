@@ -1,23 +1,24 @@
 apiVersion: policy.karmada.io/v1alpha1
 kind: PropagationPolicy
 metadata:
-  name: frontend-propagation
+  name: backend-propagationpolicy-gateway
 spec:
   resourceSelectors:
     - apiVersion: apps/v1
       kind: Deployment
-      name: frontend-deployment
+      name: backend-deployment-gateway
     - apiVersion: v1
       kind: Service
-      name: frontend-service
+      name: backend-service-gateway
     - apiVersion: gateway.networking.k8s.io/v1
       kind: HTTPRoute
-      name: http-frontend
+      name: http-backend
   placement:
     clusterAffinity:
       clusterNames:
         - cn-gke-1
         - cn-gke-2
+        - cn-gke-3
     replicaScheduling:
       replicaDivisionPreference: Weighted
       replicaSchedulingType: Divided
@@ -31,3 +32,7 @@ spec:
               clusterNames:
                 - cn-gke-2
             weight: 3
+          - targetCluster:
+              clusterNames:
+                - cn-gke-3
+            weight: 2

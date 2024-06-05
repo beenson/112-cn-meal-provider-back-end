@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service-gateway
+  annotations:
+    io.cilium/global-service: "true"
+    io.cilium/service-affinity: "local"
+spec:
+  selector:
+    app: backend-gateway
+  ports:
+    - name: http
+      port: 80
+      targetPort: 55688
+  type: ClusterIP

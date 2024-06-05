@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment-ordering
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-ordering
+  template:
+    metadata:
+      labels:
+        app: backend-ordering
+    spec:
+      containers:
+        - name: gateway
+          image: ${FULL_IMAGE_PATH}
+          command: ["ordering"]
+          ports:
+            - containerPort: 3000
+          env:
+            - name: "GRPC_ADDRESS"
+              value: ":3000"

@@ -1,12 +1,15 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
+
+	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/gateway/internal"
 )
 
 func Ping(w http.ResponseWriter, r *http.Request) {
-	// username := r.Context().Value("Uid").(string)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"msg": "pong!"})
+	resp := struct {
+		Msg string `json:"msg"`
+	}{"pong!"}
+
+	internal.SendJSONResponse(w, resp)
 }

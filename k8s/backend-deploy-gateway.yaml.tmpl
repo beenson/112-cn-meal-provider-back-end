@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment-gateway
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-gateway
+  template:
+    metadata:
+      labels:
+        app: backend-gateway
+    spec:
+      containers:
+        - name: gateway
+          image: ${FULL_IMAGE_PATH}
+          command: ["gateway"]
+          ports:
+            - containerPort: 55688
+          env:
+            - name: "SERVICE_ORDERING_TARGET"
+              value: "backend-service-ordering:3000"
