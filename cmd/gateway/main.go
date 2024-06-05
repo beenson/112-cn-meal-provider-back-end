@@ -11,15 +11,17 @@ import (
 func main() {
 	r := mux.NewRouter()
 	//menu admin
-	r.HandleFunc("/api/menu", handler.GetMenu).Methods("GET") //user + admin
-	r.HandleFunc("/api/menu", handler.PostMenu).Methods("POST")
-	r.HandleFunc("/api/menu", handler.PutMenu).Methods("PUT")
-	r.HandleFunc("/api/menu", handler.DeleteMenu).Methods("DELELTE")
+	r.HandleFunc("/api/food", handler.GetMenu).Methods("GET") //user + admin
+	r.HandleFunc("/api/food", handler.PostMenu).Methods("POST")
+	r.HandleFunc("/api/food", handler.PutMenu).Methods("PUT")
+	r.HandleFunc("/api/food", handler.DeleteMenu).Methods("DELELTE")
 	//order user
 	r.HandleFunc("/api/order", handler.GetOrder).Methods("GET") //user + admin
+	r.HandleFunc("/api/orders", handler.GetOrders).Methods("GET")
 	r.HandleFunc("/api/order", handler.PostOrder).Methods("POST")
-	r.HandleFunc("/api/order", handler.PutOrder).Methods("PUT")
-	r.HandleFunc("/api/order", handler.DeleteOrder).Methods("DELELTE")
+	//cart
+	r.HandleFunc("/api/cart", handler.GetOrder).Methods("GET")
+	r.HandleFunc("/api/cart", handler.PostOrder).Methods("POST")
 	//mail
 	r.HandleFunc("/api/mail", handler.Mail)
 	//login

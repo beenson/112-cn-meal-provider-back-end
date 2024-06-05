@@ -38,3 +38,60 @@ type UpdateCommentMsg struct {
 type DeleteCommentMsg struct {
 	CommentId int32 `json:"commentId"`
 }
+
+// /api/cart
+type AddToCartRequest struct {
+	UserId string `json:"uid"`
+	FoodId string `json:"foodId"`
+	Amount uint32 `json:"amount"`
+}
+
+type GetCartItemRequest struct {
+	UserId string `json:"uid,omitempty"`
+}
+
+type UpdateCartAmountRequest struct {
+	UserId string `json:"uid"`
+	Amount uint32 `json:"amount"`
+	Itemid string `json:"itemId"`
+}
+
+type ClearCartRequest struct {
+	UserId string `json:"uid"`
+}
+
+// /api/food
+type CreateFoodRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"descrpition"`
+	Price       int32  `json:"price"`
+	URL         string `json:"url"`
+}
+
+type GetFoodRequest struct {
+	Id string `json:"foodId"`
+}
+
+type UpdateFoodRequest struct {
+	Id          string `json:"foodId"`
+	Name        string `json:"name"`
+	Description string `json:"descrpition"`
+	Price       int32  `json:"price"`
+	URL         string `json:"url"`
+}
+
+type DeleteFoodRequest struct {
+	Id string `json:"foodId"`
+}
+
+type MakeOrderRequest struct {
+	Uid string `json:"uid"`
+}
+
+type GetOrderRequest struct {
+	OrderId string `json:"orderId"`
+}
+
+type GetOrdersRequest struct {
+	Uid string `json:"uid"`
+}

@@ -10,12 +10,12 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func GetOrder(w http.ResponseWriter, r *http.Request) {
+func GetMenu(w http.ResponseWriter, r *http.Request) {
 	if !auth(&w, r, "") {
 		return
 	}
 	// w.Header().Set("Content-Type", "application/json")
-	var msg api.GetOrderRequest
+	var msg api.GetFoodRequest
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&msg)
 	if err != nil {
@@ -28,9 +28,63 @@ func GetOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := order.NewOrderingServiceClient(conn)
-	resp, err := client.GetOrder(context.Background(), &order.GetOrderRequest{
-		Id: &order.OrderID{
-			Id: msg.OrderId,
+	if msg.Id == "" {
+		resp, err := client.GetFoods(context.Background(), &order.GetFoodsRequest{})
+		if err != nil {
+			sendJSONError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		conn.Close()
+		jsonBytes, err := protojson.Marshal(resp)
+		if err != nil {
+			sendJSONError(w, err.Error(), http.StatusBadRequest)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonBytes)
+	} else {
+		resp, err := client.GetFood(context.Background(), &order.GetFoodRequest{
+			Id: &order.FoodID{
+				Id: msg.Id,
+			},
+		})
+		if err != nil {
+			sendJSONError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		conn.Close()
+		jsonBytes, err := protojson.Marshal(resp)
+		if err != nil {
+			sendJSONError(w, err.Error(), http.StatusBadRequest)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonBytes)
+	}
+}
+
+func PostMenu(w http.ResponseWriter, r *http.Request) {
+	if !auth(&w, r, "") {
+		return
+	}
+	// w.Header().Set("Content-Type", "application/json")
+	var msg api.CreateFoodRequest
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&msg)
+	if err != nil {
+		sendJSONError(w, "Could not parse json body !", http.StatusInternalServerError)
+		return
+	}
+	conn, err := newClient(orderTarget)
+	if err != nil {
+		sendJSONError(w, "Could not connect to order service!", http.StatusInternalServerError)
+		return
+	}
+	client := order.NewOrderingServiceClient(conn)
+	resp, err := client.CreateFood(context.Background(), &order.CreateFoodRequest{
+		Input: &order.CreateFoodInput{
+			Name:        msg.Name,
+			Description: msg.Description,
+			Price:       msg.Price,
+			ImageUrl:    msg.URL,
 		},
 	})
 	if err != nil {
@@ -45,12 +99,13 @@ func GetOrder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonBytes)
 }
-func GetOrders(w http.ResponseWriter, r *http.Request) {
+
+func PutMenu(w http.ResponseWriter, r *http.Request) {
 	if !auth(&w, r, "") {
 		return
 	}
 	// w.Header().Set("Content-Type", "application/json")
-	var msg api.GetOrdersRequest
+	var msg api.UpdateFoodRequest
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&msg)
 	if err != nil {
@@ -63,8 +118,16 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := order.NewOrderingServiceClient(conn)
-	resp, err := client.GetOrders(context.Background(), &order.GetOrdersRequest{
-		UserId: msg.Uid,
+	resp, err := client.UpdateFood(context.Background(), &order.UpdateFoodRequest{
+		Id: &order.FoodID{
+			Id: msg.Id,
+		},
+		Input: &order.UpdateFoodInput{
+			Name:        &msg.Name,
+			Description: &msg.Description,
+			Price:       &msg.Price,
+			ImageUrl:    &msg.URL,
+		},
 	})
 	if err != nil {
 		sendJSONError(w, err.Error(), http.StatusBadRequest)
@@ -78,12 +141,12 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonBytes)
 }
-func PostOrder(w http.ResponseWriter, r *http.Request) {
+func DeleteMenu(w http.ResponseWriter, r *http.Request) {
 	if !auth(&w, r, "") {
 		return
 	}
 	// w.Header().Set("Content-Type", "application/json")
-	var msg api.MakeOrderRequest
+	var msg api.DeleteFoodRequest
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&msg)
 	if err != nil {
@@ -96,8 +159,10 @@ func PostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := order.NewOrderingServiceClient(conn)
-	resp, err := client.MakeOrder(context.Background(), &order.MakeOrderRequest{
-		UserId: msg.Uid,
+	resp, err := client.DeleteFood(context.Background(), &order.DeleteFoodRequest{
+		Id: &order.FoodID{
+			Id: msg.Id,
+		},
 	})
 	if err != nil {
 		sendJSONError(w, err.Error(), http.StatusBadRequest)

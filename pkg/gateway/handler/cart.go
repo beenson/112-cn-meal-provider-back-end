@@ -10,12 +10,12 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func GetOrder(w http.ResponseWriter, r *http.Request) {
+func GetCart(w http.ResponseWriter, r *http.Request) {
 	if !auth(&w, r, "") {
 		return
 	}
 	// w.Header().Set("Content-Type", "application/json")
-	var msg api.GetOrderRequest
+	var msg api.GetCartItemRequest
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&msg)
 	if err != nil {
@@ -28,10 +28,45 @@ func GetOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := order.NewOrderingServiceClient(conn)
-	resp, err := client.GetOrder(context.Background(), &order.GetOrderRequest{
-		Id: &order.OrderID{
-			Id: msg.OrderId,
+	resp, err := client.GetCartItems(context.Background(), &order.GetCartItemsRequest{
+		UserId: msg.UserId,
+	})
+	if err != nil {
+		sendJSONError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	conn.Close()
+	jsonBytes, err := protojson.Marshal(resp)
+	if err != nil {
+		sendJSONError(w, err.Error(), http.StatusBadRequest)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonBytes)
+}
+func PostCart(w http.ResponseWriter, r *http.Request) {
+	if !auth(&w, r, "") {
+		return
+	}
+	// w.Header().Set("Content-Type", "application/json")
+	var msg api.AddToCartRequest
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&msg)
+	if err != nil {
+		sendJSONError(w, "Could not parse json body !", http.StatusInternalServerError)
+		return
+	}
+	conn, err := newClient(orderTarget)
+	if err != nil {
+		sendJSONError(w, "Could not connect to order service!", http.StatusInternalServerError)
+		return
+	}
+	client := order.NewOrderingServiceClient(conn)
+	resp, err := client.AddToCart(context.Background(), &order.AddToCartRequest{
+		UserId: msg.UserId,
+		FoodId: &order.FoodID{
+			Id: msg.FoodId,
 		},
+		Amount: msg.Amount,
 	})
 	if err != nil {
 		sendJSONError(w, err.Error(), http.StatusBadRequest)
@@ -45,12 +80,12 @@ func GetOrder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonBytes)
 }
-func GetOrders(w http.ResponseWriter, r *http.Request) {
+func PutCart(w http.ResponseWriter, r *http.Request) {
 	if !auth(&w, r, "") {
 		return
 	}
 	// w.Header().Set("Content-Type", "application/json")
-	var msg api.GetOrdersRequest
+	var msg api.UpdateCartAmountRequest
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&msg)
 	if err != nil {
@@ -63,8 +98,11 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := order.NewOrderingServiceClient(conn)
-	resp, err := client.GetOrders(context.Background(), &order.GetOrdersRequest{
-		UserId: msg.Uid,
+	resp, err := client.UpdateCartAmount(context.Background(), &order.UpdateCartAmountRequest{
+		Id: &order.CartItemID{
+			Id: msg.Itemid,
+		},
+		Amount: msg.Amount,
 	})
 	if err != nil {
 		sendJSONError(w, err.Error(), http.StatusBadRequest)
@@ -78,12 +116,12 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonBytes)
 }
-func PostOrder(w http.ResponseWriter, r *http.Request) {
+func DeleteCart(w http.ResponseWriter, r *http.Request) {
 	if !auth(&w, r, "") {
 		return
 	}
 	// w.Header().Set("Content-Type", "application/json")
-	var msg api.MakeOrderRequest
+	var msg api.ClearCartRequest
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&msg)
 	if err != nil {
@@ -96,8 +134,8 @@ func PostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := order.NewOrderingServiceClient(conn)
-	resp, err := client.MakeOrder(context.Background(), &order.MakeOrderRequest{
-		UserId: msg.Uid,
+	resp, err := client.ClearCart(context.Background(), &order.ClearCartRequest{
+		UserId: msg.UserId,
 	})
 	if err != nil {
 		sendJSONError(w, err.Error(), http.StatusBadRequest)
