@@ -2,7 +2,7 @@ version: '3'
 
 services:
   billing-service:
-    image: backend-microsvcs-billing-system
+    image: meal-provider-backend
     build:
       context: ../
       dockerfile: docker/micro-svcs/billing/Dockerfile
