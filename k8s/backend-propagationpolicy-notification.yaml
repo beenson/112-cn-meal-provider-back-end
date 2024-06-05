@@ -1,0 +1,33 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: backend-propagationpolicy-notification
+spec:
+  resourceSelectors:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: backend-deployment-notification
+    - apiVersion: v1
+      kind: Service
+      name: backend-service-notification
+    - apiVersion: gateway.networking.k8s.io/v1
+      kind: HTTPRoute
+      name: http-backend-notification
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - cn-gke-1
+        - cn-gke-2
+    replicaScheduling:
+      replicaDivisionPreference: Weighted
+      replicaSchedulingType: Divided
+      weightPreference:
+        staticWeightList:
+          - targetCluster:
+              clusterNames:
+                - cn-gke-1
+            weight: 2
+          - targetCluster:
+              clusterNames:
+                - cn-gke-2
+            weight: 3
