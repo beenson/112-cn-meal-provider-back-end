@@ -1,0 +1,48 @@
+default:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+
+  # custom shared variables
+  IMAGE_NAME: meal-provider-frontend
+  TAG: $CI_COMMIT_SHA
+  FULL_IMAGE_PATH: ${CTR_REGISTRY_HOST}/${PROJECT_ID}/${CTR_REPOSITORY}/${IMAGE_NAME}:${TAG}
+
+stages:
+  - deploy
+
+docker_push:
+  stage: deploy
+  tags:
+    - docker
+    - cn
+  # services:
+  #   - docker:24.0.5-dind
+  # image: docker:24.0.5
+  before_script:
+    - echo $GCLOUD_SERVICE_KEY | base64 -d -i | docker login -u _json_key --password-stdin ${CTR_REGISTRY_HOST}
+  script:
+    - docker info
+    - docker build -t ${FULL_IMAGE_PATH} .
+    - docker push ${FULL_IMAGE_PATH}
+
+kubernetes_deploy:
+  stage: deploy
+  # needs: ["docker_push"]
+  tags:
+    - docker
+    - cn
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: [""]
+  script:
+    - kubectl version --client
+    - kubectl get service --kubeconfig $KUBECONFIG_KARMADA_API_SERVER
+    - envsubst < ./deploy/frontend-deploy.yaml.tmpl > ./deploy/frontend-deploy.yaml
+    - |
+      for file in ./deploy/*.yaml; do
+        kubectl apply -f "$file" --kubeconfig $KUBECONFIG_KARMADA_API_SERVER
+      done
