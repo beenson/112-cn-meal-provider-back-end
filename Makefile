@@ -3,7 +3,7 @@
 proto: common.pb.go user_mgmt.pb.go ordering.pb.go rating.pb.go notification.pb.go billing.pb.go
 
 %.pb.go: proto/%.proto
-	protoc --go_out=module=gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end:. \
+	protoc --experimental_allow_proto3_optional --go_out=module=gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end:. \
 		--go-grpc_out=module=gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end:. \
 		-I proto $< 
 

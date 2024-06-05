@@ -9,7 +9,7 @@ type User struct {
 	Username   string
 	Department string
 	Email      string
-	PublicKey  string
+	Password   string
 }
 
 type UserAuth struct {

@@ -19,7 +19,7 @@ message UnregisterUserRequest {
 
 message NewUserInfo {
     required UserInfo info = 1;
-    required string publicKey = 2;
+    required string password = 2;
 }
 
 message Challenge {
@@ -47,7 +47,10 @@ message GetUserReply {
     repeated UserInfo uinfo = 1;
 }
 
-
+message AuthUserRequest {
+    required string email = 1;
+    required string password = 2;
+}
 service UserManagementService {
     // deprecated
     rpc PreAuth(UserID) returns (Challenge);
@@ -57,4 +60,5 @@ service UserManagementService {
     // on board rpc
     rpc GetSysUsers(GetUserRequest) returns (GetUserReply);
     rpc GetUserByIds(GetUserRequest) returns (GetUserReply);
+    rpc AuthUserLogin(AuthUserRequest) returns (GetUserReply);
 }
