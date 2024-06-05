@@ -1,0 +1,223 @@
+syntax = "proto3";
+package meal_provider;
+
+import "google/protobuf/timestamp.proto";
+
+import "common.proto";
+
+option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/ordering;ordering";
+
+message FoodID {
+  string id = 1;
+}
+
+message Food {
+  FoodID id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+
+  string name = 4;
+  string description = 5;
+  int32 price = 6;
+  string image_url = 7;
+}
+
+message CartItemID {
+  string id = 1;
+}
+
+message CartItem {
+  CartItemID id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+
+  string user_id = 4;
+
+  string food_id = 5;
+  optional Food food = 6;
+
+  uint32 amount = 7;
+}
+
+message OrderID {
+  string id = 1;
+}
+
+message Order {
+  OrderID id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+
+  string user_id = 4;
+  repeated OrderItem items = 5;
+  int32 subtotal = 6;
+}
+
+message OrderItemID {
+  string id = 1;
+}
+
+message OrderItem {
+  OrderItemID id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+
+  string order_id = 4;
+  string food_id = 5;
+  uint32 amount = 6;
+}
+
+message CreateFoodInput {
+  string name = 1;
+  string description = 2;
+  int32 price = 3;
+  string image_url = 4;
+}
+
+// ==========
+// CreateFood
+
+message CreateFoodRequest {
+  CreateFoodInput input = 1;
+}
+
+message CreateFoodResponse {
+  Food created_food = 1;
+}
+
+// =======
+// GetFood
+
+message GetFoodRequest {
+  FoodID id = 1;
+}
+
+message GetFoodResponse {
+  optional Food food = 1;
+}
+
+// ========
+// GetFoods
+
+message GetFoodsRequest {
+}
+
+message GetFoodsResponse {
+  repeated Food foods = 1;
+}
+
+
+message UpdateFoodInput {
+  optional string name = 1;
+  optional string description = 2;
+  optional int32 price = 3;
+  optional string image_url = 4;
+}
+
+// ==========
+// UpdateFood
+
+message UpdateFoodRequest {
+  FoodID id = 1;
+  UpdateFoodInput input = 2;
+}
+
+message UpdateFoodResponse {
+  Food updated_food = 1;
+}
+
+// ==========
+// DeleteFood
+
+message DeleteFoodRequest {
+  FoodID id = 1;
+}
+
+message DeleteFoodResponse {
+}
+
+
+
+message AddToCartRequest {
+  string user_id = 1;
+  FoodID food_id = 2;
+  uint32 amount = 3;
+}
+
+message AddToCartResponse {
+  CartItem added_item = 1;
+}
+
+
+message GetCartItemsRequest {
+  string user_id = 1;
+}
+
+message GetCartItemsResponse {
+  repeated CartItem items = 1;
+}
+
+
+message UpdateCartAmountRequest {
+  CartItemID id = 1;
+  uint32 amount = 2;
+}
+
+message UpdateCartAmountResponse {
+  CartItem updated_item = 1;
+}
+
+
+message ClearCartRequest {
+  string user_id = 1;
+}
+
+message ClearCartResponse {
+}
+
+
+message MakeOrderRequest {
+  string user_id = 1;
+}
+
+message makeOrderResponse {
+  Order created_order = 1;
+}
+
+
+message GetOrderRequest {
+  OrderID id = 1;
+}
+
+message GetOrderResponse {
+  Order order = 1;
+}
+
+
+message GetOrdersRequest {
+  string user_id = 1;
+}
+
+message GetOrdersResponse {
+  repeated Order orders = 1;
+}
+
+service OrderingService {
+  rpc CreateFood(CreateFoodRequest) returns (CreateFoodResponse);
+
+  rpc GetFood(GetFoodRequest) returns (GetFoodResponse);
+  rpc GetFoods(GetFoodsRequest) returns (GetFoodsResponse);
+
+  rpc UpdateFood(UpdateFoodRequest) returns (UpdateFoodResponse);
+  rpc DeleteFood(DeleteFoodRequest) returns (DeleteFoodResponse);
+
+  rpc AddToCart(AddToCartRequest) returns (AddToCartResponse);
+  rpc GetCartItems(GetCartItemsRequest) returns (GetCartItemsResponse);
+  rpc UpdateCartAmount(UpdateCartAmountRequest) returns (UpdateCartAmountResponse);
+  rpc ClearCart(ClearCartRequest) returns (ClearCartResponse);
+
+  rpc MakeOrder(MakeOrderRequest) returns (makeOrderResponse);
+  
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+  rpc GetOrders(GetOrdersRequest) returns (GetOrdersResponse);
+}

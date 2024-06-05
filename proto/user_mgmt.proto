@@ -1,0 +1,64 @@
+syntax = "proto2";
+package meal_provider;
+import "common.proto";
+option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/user_mgmt;user_mgmt";
+
+message UserID {
+    required string id = 1;
+}
+
+message RegisterUserRequest {
+    required AuthToken admintoken = 1;
+    required NewUserInfo info = 2;
+}
+
+message UnregisterUserRequest {
+    required AuthToken admintoken = 1;
+    required UserID target = 2;
+}
+
+message NewUserInfo {
+    required UserInfo info = 1;
+    required string password = 2;
+}
+
+message Challenge {
+    required bytes value = 1;
+}
+
+message Response {
+    required bytes value = 1;
+}
+
+message AuthRequest {
+    required UserID id = 1;
+    required Response response = 2;
+}
+
+message GetUserRequest {
+    optional UserList uList = 1;
+}
+
+message UserList {
+    repeated string uid = 1;
+}
+
+message GetUserReply {
+    repeated UserInfo uinfo = 1;
+}
+
+message AuthUserRequest {
+    required string email = 1;
+    required string password = 2;
+}
+service UserManagementService {
+    // deprecated
+    rpc PreAuth(UserID) returns (Challenge);
+    rpc Auth(AuthRequest) returns (AuthToken);
+    rpc RegisterUser(RegisterUserRequest) returns (Status);
+    rpc UnregisterUser(UnregisterUserRequest) returns (Status);
+    // on board rpc
+    rpc GetSysUsers(GetUserRequest) returns (GetUserReply);
+    rpc GetUserByIds(GetUserRequest) returns (GetUserReply);
+    rpc AuthUserLogin(AuthUserRequest) returns (GetUserReply);
+}

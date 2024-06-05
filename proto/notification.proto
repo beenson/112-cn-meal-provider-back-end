@@ -1,0 +1,19 @@
+syntax = "proto3";
+package meal_provider;
+
+import "common.proto";
+
+option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/notification;notification";
+
+message SendPayPaymentNotificationRequest {
+  string user_id = 1;
+  int32 amount = 2;
+}
+
+message SendPayPaymentNotificationResponse {
+
+}
+
+service NotificationService {
+  rpc SendPayPaymentNotification(SendPayPaymentNotificationRequest) returns(SendPayPaymentNotificationResponse);
+}

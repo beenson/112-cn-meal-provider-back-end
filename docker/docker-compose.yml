@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  billing-service:
+    image: backend-microsvcs-billing-system
+    build:
+      context: ../
+      dockerfile: docker/micro-svcs/billing/Dockerfile
+  billing-svc-db:
+    image: vitess/vttestserver:mysql57
+  notification-service:
+    image: backend-microsvcs-notification-system
+    build:
+      context: ../
+      dockerfile: docker/micro-svcs/notification/Dockerfile
+  ordering-service:
+    image: backend-microsvcs-ordering-system
+    build:
+      context: ../
+      dockerfile: docker/micro-svcs/ordering/Dockerfile
+  rating-service:
+    image: backend-microsvcs-rating-system
+    build:
+      context: ../
+      dockerfile: docker/micro-svcs/rating/Dockerfile
+  user-mgmt-service:
+    image: backend-microsvcs-user-mgmt-system
+    build:
+      context: ../
+      dockerfile: docker/micro-svcs/user-mgmt/Dockerfile
+  api-gateway:
+    image: backend-api-gateway
+    build:
+      context: ../
+      dockerfile: docker/api-gateway/Dockerfile

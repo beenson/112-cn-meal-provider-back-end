@@ -1,0 +1,22 @@
+syntax = "proto2";
+package meal_provider;
+// import "google/protobuf/timestamp.proto";
+option go_package = "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/common;common";
+
+
+message AuthToken {
+    required bytes tokenValue = 1;
+    // required google.protobuf.Timestamp authAt = 2;
+}
+
+message UserInfo {
+    required string id = 1;
+    required string name = 2;
+    required string group = 3;
+    required string department = 4;
+    required string email = 5;
+}
+
+message Status {
+    required int32 code = 1;
+}
