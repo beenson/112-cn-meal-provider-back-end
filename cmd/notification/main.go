@@ -5,6 +5,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/internal"
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/notification"
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/notification/sender/email"
 	grpcTransport "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/notification/transport/grpc"
@@ -36,6 +37,8 @@ func main() {
 		return
 	}
 
-	server.Serve()
+	go server.Serve()
 
+	internal.WaitUntilShutdownSignal()
+	server.Stop()
 }

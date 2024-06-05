@@ -4,6 +4,7 @@ import (
 	"github.com/caarlos0/env/v11"
 	"google.golang.org/grpc"
 
+	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/internal"
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/billing"
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/billing/model"
 	grpcTransport "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/billing/transport/grpc"
@@ -35,5 +36,8 @@ func main() {
 		return
 	}
 
-	server.Serve()
+	go server.Serve()
+
+	internal.WaitUntilShutdownSignal()
+	server.Stop()
 }

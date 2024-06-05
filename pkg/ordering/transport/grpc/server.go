@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"log"
 	"net"
 	"strconv"
 
@@ -43,9 +44,15 @@ func NewServer(
 }
 
 func (s *Server) Serve() {
+	log.Printf("gRPC server listening on %s", s.listener.Addr())
+
 	if err := s.grpcServer.Serve(s.listener); err != nil {
 		panic(err)
 	}
+}
+
+func (s *Server) Stop() {
+	s.grpcServer.GracefulStop()
 }
 
 func (s *Server) CreateFood(ctx context.Context, req *pb.CreateFoodRequest) (*pb.CreateFoodResponse, error) {

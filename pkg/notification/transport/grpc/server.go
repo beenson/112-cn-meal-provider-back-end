@@ -2,8 +2,10 @@ package grpc
 
 import (
 	"context"
-	"google.golang.org/grpc"
+	"log"
 	"net"
+
+	"google.golang.org/grpc"
 
 	"gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/pkg/notification"
 	pb "gitlab.winfra.cs.nycu.edu.tw/112-cn/meal-provider-back-end/proto/gen/notification"
@@ -39,9 +41,15 @@ func NewServer(
 }
 
 func (s *Server) Serve() {
+	log.Printf("gRPC server listening on %s", s.listener.Addr())
+
 	if err := s.grpcServer.Serve(s.listener); err != nil {
 		panic(err)
 	}
+}
+
+func (s *Server) Stop() {
+	s.grpcServer.GracefulStop()
 }
 
 func (s *Server) SendPayPaymentNotification(ctx context.Context, request *pb.SendPayPaymentNotificationRequest) (*pb.SendPayPaymentNotificationResponse, error) {
